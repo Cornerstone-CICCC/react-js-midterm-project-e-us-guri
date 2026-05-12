@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { errorHandler } from './middleware/errorHandler.js';
+import authRoutes from './routes/auth.routes.js';
 
 const app = express();
 
@@ -15,6 +16,9 @@ app.use(express.json());
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', store: 'GD Store' });
 });
+
+// Routes
+app.use('/api/auth', authRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);
