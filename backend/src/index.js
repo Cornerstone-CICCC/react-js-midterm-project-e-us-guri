@@ -4,6 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/auth.routes.js';
+import productRoutes from './routes/product.routes.js';
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.get('/api/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);
