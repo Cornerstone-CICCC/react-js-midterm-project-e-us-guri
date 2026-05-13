@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+@theme {
+  /* Cores padrão (Light Mode) */
+  --color-background: #ffffff;
+  --color-on-background: #1a1a1a;
+  --color-primary: #c0001a;
+  --color-primary-container: #e61e2a;
+  --color-secondary: #4b5563;
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #44474e;
+  --color-surface-container-high: #f0f2f5;
+  --color-outline-variant: #c4c7cf;
+
+  /* Fontes do projeto */
+  --font-headline-xl: "anybody", sans-serif;
+  --font-body-md: "montserrat", sans-serif;
+}
+
+/* Configuração do Dark Mode (Cores baseadas no seu HTML) */
+@layer base {
+  .dark {
+    --color-background: #200f0d;
+    --color-on-background: #fddbd7;
+    --color-primary: #ffb3ad;
+    --color-primary-container: #e61e2a;
+    --color-secondary: #c8c6c5;
+    --color-on-surface: #fddbd7;
+    --color-on-surface-variant: #e7bdb9;
+    --color-surface-container-high: #392523;
+    --color-outline-variant: #5d3f3c;
+  }
+
+  /* Aplica a transição global para suavizar a troca de tema */
+  * {
+    @apply transition-colors duration-500;
+  }
+}

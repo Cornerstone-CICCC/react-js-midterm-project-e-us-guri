@@ -1,62 +1,126 @@
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
+import { IoSearch, IoMoon } from "react-icons/io5";
+import { PiSun } from "react-icons/pi";
+import { useTheme } from "../contexts/theme/ThemeContext";
 
 const Header = () => {
+  const { darkMode, toggleDarkMode } = useTheme();
+
   return (
-  <header className="bg-background/80 dark:bg-background/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-md docked full-width top-0 z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 w-full">
-    
-    <div className="font-headline-xl text-headline-lg text-primary-container dark:text-primary tracking-tighter italic">
-    GD STORE
-    </div>
+    <header className="bg-background/80 dark:bg-background/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-md sticky top-0 z-50 flex justify-between items-center px-6 md:px-12 py-4 w-full transition-colors duration-500">
 
-  <nav className="hidden md:flex gap-8">
-    <a
-      className="text-primary-container dark:text-primary font-label-bold border-b-2 border-primary-container hover:scale-105 transition-transform duration-200 active:scale-95"
-      href="#"
-    >
-      Firm Ground
-    </a>
+      {/* LOGO: */}
+      <div>
+        <img
+          src="/images/gdstore-logo.png"
+          alt="GD STORE"
+          className="w-40 object-contain"
+        />
+      </div>
 
-    <a
-      className="text-on-surface-variant dark:text-secondary font-label-bold hover:text-primary hover:scale-105 transition-transform duration-200 active:scale-95"
-      href="#"
-    >
-      Soft Ground
-    </a>
+      {/* NAVIGATION: */}
+      <nav className="hidden md:flex gap-8">
+        <a
+          className="text-primary-container dark:text-primary font-bold border-b-2 border-primary-container hover:scale-105 transition-all duration-300 active:scale-95"
+          href="#"
+        >
+          Firm Ground
+        </a>
 
-    <a
-      className="text-on-surface-variant dark:text-secondary font-label-bold hover:text-primary hover:scale-105 transition-transform duration-200 active:scale-95"
-      href="#"
-    >
-      Turf
-    </a>
-  </nav>
+        <a
+          className="text-on-surface-variant dark:text-secondary font-bold hover:text-primary hover:scale-105 transition-all duration-300 active:scale-95"
+          href="#"
+        >
+          Soft Ground
+        </a>
 
-  <div className="flex items-center gap-6">
-    <div
-      className="hidden lg:flex items-center bg-surface-container-high rounded-full px-4 py-2 border border-outline-variant/30"
-    >
-      <span className="material-symbols-outlined text-on-surface-variant">
-        search
-      </span>
+        <a
+          className="text-on-surface-variant dark:text-secondary font-bold hover:text-primary hover:scale-105 transition-all duration-300 active:scale-95"
+          href="#"
+        >
+          Turf
+        </a>
+      </nav>
 
-      <input
-        className="bg-transparent border-none focus:ring-0 text-body-md text-on-surface placeholder:text-on-surface-variant/50 w-48"
-        placeholder="Search cleats..."
-        type="text"
-      />
-    </div>
+      {/* RIGHT SIDE */}
+      <div className="flex items-center gap-6">
 
-    <button className="text-primary hover:scale-110 transition-transform">
-      <span><MdOutlineShoppingCart /> </span>
-    </button>
+        {/* SEARCH: */}
+        <div className="hidden lg:flex items-center bg-surface-container-high rounded-full px-4 py-2 border border-outline-variant/30 transition-all duration-500">
+          <IoSearch size={18} />
+          <input
+            className="bg-transparent border-none outline-none text-body-md text-on-surface placeholder:text-on-surface-variant/50 w-48 ml-2"
+            placeholder="Search cleats..."
+            type="text"
+          />
+        </div>
 
-    <button className="text-primary hover:scale-110 transition-transform">
-      <span><CgProfile /> </span>
-    </button>
-  </div>
-</header>
-  )
-}
+        {/* CART: */}
+        <button className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300">
+          <MdOutlineShoppingCart size={24} />
+        </button>
 
-export default Header
+        {/* PROFILE: */}
+        <div className="border-r-2 border-outline-variant/30 dark:border-black pr-4 ">
+          <button className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center">
+            <CgProfile size={24} />
+          </button>
+        </div>
+
+        {/* THEME TOGGLE: */}
+        <button
+          onClick={toggleDarkMode}
+          className="
+            relative
+            flex
+            items-center
+            justify-center
+            w-11
+            h-11
+            rounded-full
+            bg-surface-container-high
+            border
+            border-outline-variant/30
+            hover:scale-110
+            active:scale-95
+            transition-all
+            duration-500
+            overflow-hidden
+          "
+        >
+          {/* LIGHT MODE: */}
+          <div
+            className={`
+              absolute
+              transition-all
+              duration-500
+              ${darkMode
+                ? "rotate-0 opacity-100 scale-100"
+                : "rotate-90 opacity-0 scale-0"}
+            `}
+          >
+            <PiSun size={22} className="text-primary" />
+          </div>
+
+          {/* DARK MODE: */}
+          <div
+            className={`
+              absolute
+              transition-all
+              duration-500
+              ${darkMode
+                ? "-rotate-90 opacity-0 scale-0"
+                : "rotate-0 opacity-100 scale-100"}
+            `}
+          >
+            <IoMoon size={22} className="text-primary" />
+          </div>
+        </button>
+
+      </div>
+    </header>
+  );
+};
+
+export default Header;
