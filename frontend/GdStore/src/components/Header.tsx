@@ -8,7 +8,7 @@ const Header = () => {
   const { darkMode, toggleDarkMode } = useTheme();
 
   return (
-    <header className="bg-background/80 dark:bg-background/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-md z-50 flex justify-between items-center px-6 md:px-12 py-4 w-full transition-colors duration-500">
+    <header className="bg-background dark:bg-background border-b border-outline-variant/30 shadow-md z-50 flex justify-between items-center px-6 md:px-12 py-4 w-full transition-colors duration-500">
 
       {/* LOGO: */}
       <div>
