@@ -1,18 +1,14 @@
 import "./App.css";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import LoginPage from "./pages/Login-Register";
+import { AppRouter } from "./routes/routes";
 import { ThemeProvider } from "./contexts/theme/ThemeContext";
+import { CartContextProvider } from "./contexts/cart/CartContextProvider";
 
 function App() {
   return (
     <ThemeProvider>
-      <Header />
-
-      {/* Renderizando a página de login diretamente */}
-      <LoginPage />
-
-      <Footer />
+      <CartContextProvider>
+        <AppRouter />
+      </CartContextProvider>
     </ThemeProvider>
   );
 }
