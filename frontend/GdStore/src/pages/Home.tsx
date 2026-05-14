@@ -25,13 +25,13 @@ const TerrainCard = ({
     />
     <div className="absolute inset-0 bg-primary-container/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
     <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8 bg-black/40 group-hover:bg-black/10 transition-all">
-      <h3 className="font-display-lg italic uppercase text-on-surface group-hover:scale-110 transition-transform text-4xl">
+      <h3 className="font-display-lg italic uppercase text-white group-hover:scale-110 transition-transform text-4xl">
         {title}
       </h3>
-      <p className="text-on-surface font-label-bold mt-4 opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">
+      <p className="text-white font-label-bold mt-4 opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">
         {subtitle}
       </p>
-      <button className="mt-8 border border-on-surface text-on-surface px-6 py-2 font-label-bold uppercase italic opacity-0 group-hover:opacity-100 transition-all">
+      <button className="mt-8 border border-white text-white px-6 py-2 font-label-bold uppercase italic opacity-0 group-hover:opacity-100 transition-all">
         {buttonText}
       </button>
     </div>
@@ -64,11 +64,11 @@ export default function Home() {
               Elite Performance
             </span>
           </div>
-          <h1 className="font-display-lg text-[64px] md:text-display-lg italic uppercase text-on-surface leading-tight mb-8">
+          <h1 className="font-display-lg text-[64px] md:text-display-lg italic uppercase text-white leading-tight mb-8">
             Fuel Your <br />
             <span className="text-primary-container">Speed.</span>
           </h1>
-          <p className="font-body-lg text-on-surface-variant max-w-xl mb-10">
+          <p className="font-body-lg text-white/70 max-w-xl mb-10">
             Engineered for the fastest players on the pitch. Experience the
             perfect fusion of technical mesh, carbon fiber stability, and
             explosive traction.
@@ -77,7 +77,7 @@ export default function Home() {
             <button className="bg-primary-container text-on-primary-container font-label-bold px-10 py-4 uppercase italic hover:scale-105 transition-all shadow-[0_0_20px_rgba(230,30,42,0.4)] active:scale-95">
               Shop Now
             </button>
-            <button className="border-2 border-on-surface text-on-surface font-label-bold px-10 py-4 uppercase italic hover:bg-on-surface hover:text-surface transition-all active:scale-95">
+            <button className="border-2 border-white text-white font-label-bold px-10 py-4 uppercase italic hover:bg-white hover:text-black transition-all active:scale-95">
               Watch Film
             </button>
           </div>
@@ -109,17 +109,17 @@ export default function Home() {
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               alt="Vaporized X-1"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent opacity-80"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-8">
               <div className="bg-primary-container inline-block px-3 py-1 mb-3 -skew-x-[15deg]">
                 <span className="block text-[10px] font-label-bold text-on-primary-container uppercase skew-x-[15deg]">
                   Limited Edition
                 </span>
               </div>
-              <h3 className="font-headline-lg italic text-on-surface text-3xl">
+              <h3 className="font-headline-lg italic text-white text-3xl">
                 VAPORIZED X-1
               </h3>
-              <p className="text-on-surface-variant mb-4">
+              <p className="text-white/70 mb-4">
                 Unrivaled acceleration for the modern winger.
               </p>
               <p className="font-headline-lg text-primary-container text-2xl">
@@ -135,9 +135,9 @@ export default function Home() {
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               alt="Control Core"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent opacity-60"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-6">
-              <h3 className="font-headline-lg text-[24px] italic text-on-surface">
+              <h3 className="font-headline-lg text-[24px] italic text-white">
                 CONTROL CORE
               </h3>
               <p className="font-label-bold text-primary-container">$199.99</p>
@@ -151,8 +151,8 @@ export default function Home() {
               alt="Turf Elite"
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />
-            <div className="absolute bottom-0 left-0 p-4 w-full bg-surface-container-high/90 backdrop-blur-md">
-              <h3 className="font-label-bold italic text-on-surface">
+            <div className="absolute bottom-0 left-0 p-4 w-full bg-black/70 backdrop-blur-md">
+              <h3 className="font-label-bold italic text-white">
                 TURF ELITE
               </h3>
               <p className="text-primary-container text-xs font-bold">$129.99</p>
@@ -166,8 +166,8 @@ export default function Home() {
               alt="Predator SG"
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />
-            <div className="absolute bottom-0 left-0 p-4 w-full bg-surface-container-high/90 backdrop-blur-md">
-              <h3 className="font-label-bold italic text-on-surface">
+            <div className="absolute bottom-0 left-0 p-4 w-full bg-black/70 backdrop-blur-md">
+              <h3 className="font-label-bold italic text-white">
                 PREDATOR SG
               </h3>
               <p className="text-primary-container text-xs font-bold">$249.99</p>
