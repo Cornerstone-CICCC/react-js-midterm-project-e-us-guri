@@ -15,7 +15,7 @@ const Header = () => {
         <img
           src="/images/gdstore-logo.png"
           alt="GD STORE"
-          className="w-24 object-contain"
+          className="w-16 object-contain"
         />
       </div>
 
