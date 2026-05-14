@@ -7,12 +7,13 @@ import BrowseCleats from "../pages/BrowseCleats";
 import NotFound from "../pages/NotFound";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import BottomNav from "../components/BottomNav";
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Header />
-      <main className="min-h-screen">
+      <main className="min-h-screen pb-20 md:pb-0">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginRegister />} />
@@ -21,6 +22,7 @@ export function AppRouter() {
         </Routes>
       </main>
       <Footer />
+      <BottomNav />
     </BrowserRouter>
   );
 }

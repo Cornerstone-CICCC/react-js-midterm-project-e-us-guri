@@ -1,38 +1,72 @@
 @import "tailwindcss";
 
 @theme {
-  /* Cores padrão (Light Mode) */
+  /* Light Mode */
   --color-background: #ffffff;
   --color-on-background: #1a1a1a;
   --color-primary: #c0001a;
   --color-primary-container: #e61e2a;
+  --color-on-primary-container: #fffeff;
   --color-secondary: #4b5563;
   --color-on-surface: #1a1c1c;
   --color-on-surface-variant: #44474e;
+  --color-surface: #f8f8f8;
+  --color-surface-container: #f0f0f0;
+  --color-surface-container-low: #f5f5f5;
   --color-surface-container-high: #f0f2f5;
+  --color-surface-container-highest: #e8e8e8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-variant: #e0e0e0;
+  --color-outline: #7a7a7a;
   --color-outline-variant: #c4c7cf;
 
-  /* Fontes do projeto */
+  /* Fonts */
   --font-headline-xl: "anybody", sans-serif;
+  --font-display-lg: "anybody", sans-serif;
+  --font-headline-lg: "anybody", sans-serif;
   --font-body-md: "montserrat", sans-serif;
+  --font-body-lg: "montserrat", sans-serif;
+  --font-label-bold: "montserrat", sans-serif;
+
+  /* Spacing */
+  --spacing-section-gap: 80px;
+  --spacing-gutter: 24px;
+  --spacing-margin-mobile: 20px;
+  --spacing-margin-desktop: 64px;
 }
 
-/* Configuração do Dark Mode (Cores baseadas no seu HTML) */
+/* Dark Mode */
 @layer base {
   .dark {
     --color-background: #200f0d;
     --color-on-background: #fddbd7;
     --color-primary: #ffb3ad;
     --color-primary-container: #e61e2a;
+    --color-on-primary-container: #fffeff;
     --color-secondary: #c8c6c5;
     --color-on-surface: #fddbd7;
     --color-on-surface-variant: #e7bdb9;
+    --color-surface: #200f0d;
+    --color-surface-container: #2d1b19;
+    --color-surface-container-low: #291715;
     --color-surface-container-high: #392523;
+    --color-surface-container-highest: #452f2e;
+    --color-surface-container-lowest: #1a0a09;
+    --color-surface-variant: #452f2e;
+    --color-outline: #ae8884;
     --color-outline-variant: #5d3f3c;
   }
 
-  /* Aplica a transição global para suavizar a troca de tema */
   * {
     @apply transition-colors duration-500;
   }
+}
+
+/* Custom utility classes */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.hero-gradient {
+  background: linear-gradient(180deg, rgba(32, 15, 13, 0) 0%, rgba(32, 15, 13, 1) 100%);
 }
