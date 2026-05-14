@@ -55,7 +55,7 @@ export default function Home() {
         <img
           alt="Fuel Your Speed Hero"
           className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCINkguuz2eguzBkYK_VIPxkwJj9N4NpCw-ajwwMAmNdjTi9bP34OBbynNzI_xpXM5AYfFMFqrp8Vsc-pLjWYhczkdzQt_hgfkolvmMksB5l9JnKHh2Cj039rV0wZccIiTfpG3AYeKmdMQ92DmQOi_6XEKIjLQVYova8jfqLuO_uf6V66tLPUnWpxEZHSI_9WiHQyn2J6mbxOrxxHXsAkG2IDdHSc4S0NgItDkYoClU4uSgl5eg30Tf3vlnmv0brKnMlMayUc-eD84u"
+          src="/images/banner.png"
         />
         <div className="absolute inset-0 hero-gradient"></div>
         <div className="relative z-10 px-margin-mobile md:px-margin-desktop pb-24 max-w-5xl">
