@@ -1,28 +1,64 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Home from "../pages/Home";
 import LoginRegister from "../pages/Login-Register";
 import BrowseCleats from "../pages/BrowseCleats";
-//import Admin from "../pages/Admin";
-//import Dashboard from "../pages/Dashboard";
+import Admin from "../pages/Admin";
 import NotFound from "../pages/NotFound";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import BottomNav from "../components/BottomNav";
+import { useAuth } from "../contexts/auth/AuthContext";
 
-export function AppRouter() {
+function ProtectedRoute({ children, role }: { children: React.ReactNode; role?: string }) {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (role && user.role !== role) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function AppLayout() {
+  const location = useLocation();
+  const hideLayout =
+    location.pathname === "/login" || location.pathname.startsWith("/admin");
+
   return (
-    <BrowserRouter>
-      <Header />
-      <main className="min-h-screen pb-20 md:pb-0">
+    <>
+      {!hideLayout && <Header />}
+      <main className={hideLayout ? "" : "min-h-screen pb-20 md:pb-0"}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginRegister />} />
           <Route path="/shop" element={<BrowseCleats />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute role="admin">
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      <Footer />
-      <BottomNav />
+      {!hideLayout && <Footer />}
+      {!hideLayout && <BottomNav />}
+    </>
+  );
+}
+
+export function AppRouter() {
+  return (
+    <BrowserRouter>
+      <AppLayout />
     </BrowserRouter>
   );
 }

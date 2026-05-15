@@ -1,11 +1,39 @@
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { IoSearch, IoMoon } from "react-icons/io5";
 import { PiSun } from "react-icons/pi";
 import { useTheme } from "../contexts/theme/ThemeContext";
+import { useAuth } from "../contexts/auth/AuthContext";
 
 const Header = () => {
   const { darkMode, toggleDarkMode } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleLogout = async () => {
+    setDropdownOpen(false);
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <header className="bg-background dark:bg-background border-b border-outline-variant/30 shadow-md z-50 flex justify-between items-center px-6 md:px-12 py-4 w-full transition-colors duration-500">
@@ -61,11 +89,41 @@ const Header = () => {
           <MdOutlineShoppingCart size={24} />
         </button>
 
-        {/* PROFILE: */}
-        <div className="border-r-2 border-outline-variant/30 dark:border-black pr-4 ">
-          <button className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center">
+        {/* PROFILE + DROPDOWN: */}
+        <div className="border-r-2 border-outline-variant/30 dark:border-black pr-4 relative" ref={dropdownRef}>
+          <button
+            onClick={() => {
+              if (user) {
+                setDropdownOpen((prev) => !prev);
+              } else {
+                navigate("/login");
+              }
+            }}
+            className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center"
+          >
             <CgProfile size={24} />
           </button>
+
+          {/* Dropdown */}
+          {dropdownOpen && user && (
+            <div className="absolute right-0 top-full mt-2 w-52 bg-surface-container-high border border-outline-variant/30 rounded-lg shadow-xl overflow-hidden z-50">
+              <div className="px-4 py-3 border-b border-outline-variant/20">
+                <p className="text-sm font-bold text-on-surface truncate">
+                  {user.email}
+                </p>
+                <p className="text-xs text-on-surface-variant capitalize">
+                  {user.role}
+                </p>
+              </div>
+
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-surface-container-highest transition-colors"
+              >
+                Log out
+              </button>
+            </div>
+          )}
         </div>
 
         {/* THEME TOGGLE: */}
