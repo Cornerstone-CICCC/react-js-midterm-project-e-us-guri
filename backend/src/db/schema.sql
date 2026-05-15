@@ -2,14 +2,8 @@
 -- GD STORE - Database Schema
 -- ============================================================
 
--- Users: extends neon_auth with application role
-CREATE TABLE IF NOT EXISTS users (
-    id          UUID PRIMARY KEY,
-    role        VARCHAR(20) NOT NULL DEFAULT 'client'
-                CHECK (role IN ('client', 'admin')),
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+-- Users live in neon_auth.user (managed by Neon Auth / Better Auth).
+-- Carts and orders FK directly to that table.
 
 -- Products: cleats inventory
 CREATE TABLE IF NOT EXISTS products (
@@ -30,7 +24,7 @@ CREATE TABLE IF NOT EXISTS products (
 -- Carts: one active cart per user
 CREATE TABLE IF NOT EXISTS carts (
     id          SERIAL PRIMARY KEY,
-    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id     UUID NOT NULL REFERENCES neon_auth.user(id) ON DELETE CASCADE,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT  unique_user_cart UNIQUE (user_id)
@@ -50,7 +44,7 @@ CREATE TABLE IF NOT EXISTS cart_items (
 -- Orders: completed purchases
 CREATE TABLE IF NOT EXISTS orders (
     id              SERIAL PRIMARY KEY,
-    user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id         UUID NOT NULL REFERENCES neon_auth.user(id) ON DELETE CASCADE,
     status          VARCHAR(20) NOT NULL DEFAULT 'pending'
                     CHECK (status IN ('pending', 'paid', 'shipped', 'delivered', 'cancelled')),
     total_amount    NUMERIC(10, 2) NOT NULL CHECK (total_amount >= 0),
