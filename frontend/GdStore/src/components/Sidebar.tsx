@@ -1,9 +1,10 @@
 import { MdTune } from "react-icons/md";
 
 export function Sidebar() {
-  const brands = ["Vapor Strike", "Apex Predator", "Titanium Core"];
-  const groundTypes = ["FG", "SG", "AG", "TF"];
+  const brands = ["Nike", "Adidas", "Puma"];
+  const groundTypes = ["Artificial Grass", "Natural Grass", "Futsal"];
   const sizes = ["8", "9", "10", "11", "12"];
+  const genres = ["Childish", "Adult"];
 
   return (
     <aside className="w-full md:w-64 flex flex-col gap-8 shrink-0">
@@ -12,6 +13,8 @@ export function Sidebar() {
           <h2 className="font-headline-lg text-headline-lg-mobile text-primary italic uppercase">Filters</h2>
           <MdTune className="text-secondary text-xl" />
         </div>
+        
+
 
         {/* Brand */}
         <div className="flex flex-col gap-3">
@@ -39,6 +42,21 @@ export function Sidebar() {
                 className="py-2 px-3 border border-outline-variant text-label-bold rounded hover:bg-primary-container hover:text-white transition-all -skew-x-12"
               >
                 {type}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Genre */}
+        <div className="flex flex-col gap-3">
+          <h3 className="font-label-bold text-label-bold uppercase tracking-widest text-on-surface">Genre</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {genres.map((genres) => (
+              <button
+                key={genres}
+                className="py-2 px-3 border border-outline-variant text-label-bold rounded hover:bg-primary-container hover:text-white transition-all -skew-x-12"
+              >
+                {genres}
               </button>
             ))}
           </div>

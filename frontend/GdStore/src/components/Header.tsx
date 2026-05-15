@@ -3,6 +3,7 @@ import { CgProfile } from "react-icons/cg";
 import { IoSearch, IoMoon } from "react-icons/io5";
 import { PiSun } from "react-icons/pi";
 import { useTheme } from "../contexts/theme/ThemeContext";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const { darkMode, toggleDarkMode } = useTheme();
@@ -19,28 +20,12 @@ const Header = () => {
         />
       </div>
 
-      {/* NAVIGATION: */}
+      {/* NAVIGATION: (Mantido igual) */}
       <nav className="hidden md:flex gap-8">
-        <a
-          className="text-primary-container dark:text-primary font-bold border-b-2 border-primary-container hover:scale-105 transition-all duration-300 active:scale-95"
-          href="#"
-        >
-          Firm Ground
-        </a>
-
-        <a
-          className="text-on-surface-variant dark:text-secondary font-bold hover:text-primary hover:scale-105 transition-all duration-300 active:scale-95"
-          href="#"
-        >
-          Soft Ground
-        </a>
-
-        <a
-          className="text-on-surface-variant dark:text-secondary font-bold hover:text-primary hover:scale-105 transition-all duration-300 active:scale-95"
-          href="#"
-        >
-          Turf
-        </a>
+        <a className="text-primary-container dark:text-primary font-bold border-b-2 border-primary-container hover:scale-105 transition-all duration-300 active:scale-95" href="#">Home</a>
+        <a className="text-on-surface-variant dark:text-secondary font-bold hover:text-primary hover:scale-105 transition-all duration-300 active:scale-95" href="#">Artificial Grass</a>
+        <a className="text-on-surface-variant dark:text-secondary font-bold hover:text-primary hover:scale-105 transition-all duration-300 active:scale-95" href="#">Natural Grass</a>
+        <a className="text-on-surface-variant dark:text-secondary font-bold hover:text-primary hover:scale-105 transition-all duration-300 active:scale-95" href="#">Futsal</a>
       </nav>
 
       {/* RIGHT SIDE */}
@@ -56,64 +41,32 @@ const Header = () => {
           />
         </div>
 
-        {/* CART: */}
-        <button className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300">
+        {/* CART:*/}
+        <Link 
+          to="/products/cart" 
+          className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center"
+        >
           <MdOutlineShoppingCart size={24} />
-        </button>
+        </Link>
 
         {/* PROFILE: */}
         <div className="border-r-2 border-outline-variant/30 dark:border-black pr-4 ">
-          <button className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center">
-            <CgProfile size={24} />
-          </button>
+          <Link 
+            to="/login"
+            className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center">
+              <CgProfile size={24} />
+          </Link>
         </div>
 
-        {/* THEME TOGGLE: */}
+        {/* THEME TOGGLE:*/}
         <button
           onClick={toggleDarkMode}
-          className="
-            relative
-            flex
-            items-center
-            justify-center
-            w-11
-            h-11
-            rounded-full
-            bg-surface-container-high
-            border
-            border-outline-variant/30
-            hover:scale-110
-            active:scale-95
-            transition-all
-            duration-500
-            overflow-hidden
-          "
+          className="relative flex items-center justify-center w-11 h-11 rounded-full bg-surface-container-high border border-outline-variant/30 hover:scale-110 active:scale-95 transition-all duration-500 overflow-hidden"
         >
-          {/* LIGHT MODE: */}
-          <div
-            className={`
-              absolute
-              transition-all
-              duration-500
-              ${darkMode
-                ? "rotate-0 opacity-100 scale-100"
-                : "rotate-90 opacity-0 scale-0"}
-            `}
-          >
+          <div className={`absolute transition-all duration-500 ${darkMode ? "rotate-0 opacity-100 scale-100" : "rotate-90 opacity-0 scale-0"}`}>
             <PiSun size={22} className="text-primary" />
           </div>
-
-          {/* DARK MODE: */}
-          <div
-            className={`
-              absolute
-              transition-all
-              duration-500
-              ${darkMode
-                ? "-rotate-90 opacity-0 scale-0"
-                : "rotate-0 opacity-100 scale-100"}
-            `}
-          >
+          <div className={`absolute transition-all duration-500 ${darkMode ? "-rotate-90 opacity-0 scale-0" : "rotate-0 opacity-100 scale-100"}`}>
             <IoMoon size={22} className="text-primary" />
           </div>
         </button>
