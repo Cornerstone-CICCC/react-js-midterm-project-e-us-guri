@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // IMPORTADO O LINK AQUI
 import { useAuth } from "../contexts/auth/AuthContext";
 
 interface FormErrors {
@@ -61,7 +61,6 @@ const LoginPage = () => {
       } else {
         await register(email, password);
       }
-      // AuthContext sets user — redirect based on role happens via useEffect below
     } catch (err) {
       setErrors({ general: err instanceof Error ? err.message : "Something went wrong" });
     } finally {
@@ -69,7 +68,6 @@ const LoginPage = () => {
     }
   };
 
-  // Redirect after login/register based on role
   const { user } = useAuth();
   if (user) {
     if (user.role === "admin") {
@@ -89,8 +87,28 @@ const LoginPage = () => {
 
   return (
     <main className="flex flex-col md:flex-row h-screen overflow-hidden bg-background text-on-background selection:bg-primary-container selection:text-white">
+      
       {/* Hero Image Section */}
       <section className="relative hidden md:block md:w-1/2 md:h-full overflow-hidden">
+        
+        {/* BACK TO HOME BUTTON: */}
+        <Link 
+          to="/" 
+          className="absolute top-6 left-6 z-30 flex items-center gap-2 bg-black/40 hover:bg-black/70 border border-white/10 text-white px-4 py-2 rounded-full font-label-bold text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 backdrop-blur-md"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            strokeWidth={2.5} 
+            stroke="currentColor" 
+            className="w-4 h-4"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          Home
+        </Link>
+
         <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent z-10 hidden md:block"></div>
         <img
           alt="High-performance soccer match"

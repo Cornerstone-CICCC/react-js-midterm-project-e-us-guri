@@ -191,19 +191,19 @@ export default function Home() {
           <TerrainCard
             title="Firm Ground"
             subtitle="FOR NATURAL GRASS"
-            buttonText="Explore FG"
+            buttonText="Explore"
             img="https://lh3.googleusercontent.com/aida-public/AB6AXuA65YXpnRPpAEZZGj7xvMhSlmDaRdWS-jgSb24xc8dB14tMcxUmR5EVZaEAfHgT7VIcihX5mRb2FB2Kett1VQCq2ZbdfZsW-8xZJUQJIs3wp5eG1g-wWZAB7SRg3D-Aw3s84UuDynkl4R7L1HW8FjlUc6G0nyDLl4Cz6P1NX1Qf0SUwxePn2iUKEzQRX29FEXa82TMhYLvotLtyHcUaK5HnUYtWUqe0xZNtImtevhsja1FC0U-YfGali55T3rnj3ZdrOz1rbm4eq1er"
           />
           <TerrainCard
-            title="Soft Ground"
-            subtitle="FOR WET CONDITIONS"
-            buttonText="Explore SG"
-            img="https://lh3.googleusercontent.com/aida-public/AB6AXuDmBIx8q9DhS4rVVhV2NeYfAVYJHwzhMbQhxGh5Cyfvkl-mBCYSebCewrs6vmptzHOJv1v8FMcY_BlUsKnY1klrmU8GbsEAyJaMaLT3PcGSJgbEObQo2w-zBDo8XJCg_kZemjRFhmPYEYisaVvuU4Tws4ujMPPl4QfYv-UwKj51zffsF73pWTyTd8hEQuCIOLgPEE8Ou09vn2P1eFKz3CaG0iidA1jpZ74Dk-J-Mwi5oilTofjkacoUnN6A0teLT-DODd5gwXngCz2f"
+            title="Futsal"
+            subtitle="FOR FLAT SOLE"
+            buttonText="Explore"
+            img="https://i.pinimg.com/736x/bf/61/bd/bf61bd125649fbdb1d0aeaaac6b23c93.jpg"
           />
           <TerrainCard
             title="Turf"
-            subtitle="FOR ARTIFICIAL PITCH"
-            buttonText="Explore TF"
+            subtitle="FOR ARTIFICIAL GRASS"
+            buttonText="Explore"
             img="https://lh3.googleusercontent.com/aida-public/AB6AXuDAMqRRSEEZZ_la1gYwjGCLuWVsAllSSahQvmPf6I3dRJitRJwsQ3g-t4JxPfTwI9q3JrA3vKRcggZJQ-G5hFfwZEVX8viv_DlYFerzzWjr2LBvCgU7oCHcKcxhC6pE8-5yx7pyxGIv8k7CHxiUsjOKweSZeG59XdXXjs8A6yCgoW7AuR6xww614p-MiQAN9oQjmgaFVnuoTJT2Ng0lA_t8hyLxTTkixhpmSIrH3UBNKHXzco560bwfBqVBqswAXf24lCZ9kYe3525j"
           />
         </div>

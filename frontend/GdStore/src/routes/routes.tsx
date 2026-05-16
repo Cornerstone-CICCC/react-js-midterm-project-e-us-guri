@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import Home from "../pages/Home";
 import LoginRegister from "../pages/Login-Register";
 import BrowseCleats from "../pages/BrowseCleats";
+import ArtificialGrass from "../pages/ArtificalGrass";
+import NaturalGrass from "../pages/NaturalGrass";
+import Futsal from "../pages/Futsal";
 import Admin from "../pages/Admin";
 import NotFound from "../pages/NotFound";
 import Header from "../components/Header";
@@ -38,6 +41,11 @@ function AppLayout() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginRegister />} />
           <Route path="/shop" element={<BrowseCleats />} />
+          
+          <Route path="/category/artificial-grass" element={<ArtificialGrass />} />
+          <Route path="/category/natural-grass" element={<NaturalGrass />} />
+          <Route path="/category/futsal" element={<Futsal />} />
+          
           <Route
             path="/admin"
             element={
