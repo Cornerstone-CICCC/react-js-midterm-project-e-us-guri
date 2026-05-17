@@ -1,101 +1,175 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { cleatsData } from "../../data/CleatsData";
-import { MdBolt, MdShoppingBag } from "react-icons/md";
+import { useEffect, useState } from "react";
+import { MdShoppingBag } from "react-icons/md";
+import { getProduct, CATEGORY_LABEL, type Product } from "../../services/productsService";
+import { useCart } from "../../contexts/cart/useCart";
+import { useAuth } from "../../contexts/auth/AuthContext";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [selectedSize, setSelectedSize] = useState("10");
+  const { addItem } = useCart();
+  const { user } = useAuth();
 
-  const product = cleatsData.find((p) => p.id === Number(id));
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
 
-  if (!product) {
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    setNotFound(false);
+    getProduct(id)
+      .then((p) => {
+        setProduct(p);
+        setSelectedSize(p.sizes[0] ?? null);
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
     return (
-      <div className="p-20 text-on-surface">
+      <div className="pt-32 px-margin-desktop text-on-surface-variant">
+        Loading product…
+      </div>
+    );
+  }
+
+  if (notFound || !product) {
+    return (
+      <div className="pt-32 px-margin-desktop text-on-surface">
         Product not found.
       </div>
     );
   }
 
+  const handleAdd = async () => {
+    setFeedback(null);
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (!selectedSize) {
+      setFeedback("Pick a size first.");
+      return;
+    }
+    setAdding(true);
+    try {
+      await addItem(product.id, selectedSize, 1);
+      setFeedback("Added to cart!");
+    } catch (err) {
+      setFeedback(err instanceof Error ? err.message : "Failed to add to cart");
+    } finally {
+      setAdding(false);
+    }
+  };
+
   return (
     <div className="pt-32 pb-20 px-margin-desktop bg-background min-h-screen">
       <button
         onClick={() => navigate(-1)}
-        className="text-primary-container font-label-bold uppercase text-xs mb-8 flex items-center gap-2"
+        className="text-primary-container font-label-bold uppercase text-xs mb-8 flex items-center gap-2 cursor-pointer"
       >
-        ← Back to Inventory
+        ← Back
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
         <div className="lg:col-span-7">
-          <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-2xl">
-            <img
-              src={product.image}
-              className="w-full h-full object-cover"
-              alt={product.name}
-            />
+          <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-surface-container-highest">
+            {product.image_url && (
+              <img
+                src={product.image_url}
+                className="w-full h-full object-cover"
+                alt={product.name}
+              />
+            )}
           </div>
         </div>
 
         <div className="lg:col-span-5 space-y-8">
           <header>
-            <h1 className="font-headline-xl text-6xl text-on-surface uppercase italic leading-none">
+            <p className="text-xs uppercase tracking-widest font-label-bold text-on-surface-variant">
+              {product.brand} · {CATEGORY_LABEL[product.category]}
+            </p>
+            <h1 className="font-headline-xl text-6xl text-on-surface uppercase italic leading-none mt-2">
               {product.name}
             </h1>
-
             <p className="font-headline-lg text-3xl text-primary mt-4">
-              ${product.price.toFixed(2)}
+              ${Number(product.price).toFixed(2)}
             </p>
           </header>
 
-          <div className="pt-8 border-t border-outline-variant/30 space-y-4">
-            <h3 className="font-label-bold text-on-surface uppercase tracking-widest text-sm">
-              Description
-            </h3>
-
-            <p className="text-on-surface-variant leading-relaxed">
-              {product.description}
-            </p>
-
-            <ul className="grid grid-cols-2 gap-4">
-              {product.specs.map((spec, i) => (
-                <li
-                  key={i}
-                  className="flex items-center gap-2 text-on-surface text-[12px] font-bold uppercase"
-                >
-                  <MdBolt className="text-primary" />
-                  {spec}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {product.description && (
+            <div className="pt-8 border-t border-outline-variant/30 space-y-4">
+              <h3 className="font-label-bold text-on-surface uppercase tracking-widest text-sm">
+                Description
+              </h3>
+              <p className="text-on-surface-variant leading-relaxed">
+                {product.description}
+              </p>
+            </div>
+          )}
 
           <div className="space-y-4">
             <h3 className="font-label-bold text-on-surface uppercase tracking-widest text-sm">
               Select Size
             </h3>
-
-            <div className="grid grid-cols-4 gap-2">
-              {product.sizes.map((size) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  className={`py-3 border-2 font-bold transition-all ${
-                    selectedSize === size
-                      ? "border-primary-container bg-primary-container text-white"
-                      : "border-outline-variant text-on-surface hover:border-primary-container"
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
+            {product.sizes.length === 0 ? (
+              <p className="text-on-surface-variant text-sm">
+                No sizes available for this product.
+              </p>
+            ) : (
+              <div className="grid grid-cols-4 gap-2">
+                {product.sizes.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`py-3 border-2 font-bold transition-all cursor-pointer ${
+                      selectedSize === size
+                        ? "border-primary-container bg-primary-container text-white"
+                        : "border-outline-variant text-on-surface hover:border-primary-container"
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          <button className="w-full bg-primary-container text-white py-5 font-headline-lg uppercase italic shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3">
-            Add to Cart <MdShoppingBag size={24} />
+          {product.stock <= 0 ? (
+            <p className="text-primary-container font-label-bold uppercase tracking-widest text-sm">
+              Sold out
+            </p>
+          ) : (
+            <p className="text-on-surface-variant text-sm">
+              {product.stock} in stock
+            </p>
+          )}
+
+          <button
+            onClick={handleAdd}
+            disabled={adding || product.stock <= 0 || product.sizes.length === 0}
+            className="w-full bg-primary-container text-white py-5 font-headline-lg uppercase italic shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:hover:scale-100 cursor-pointer disabled:cursor-not-allowed"
+          >
+            {adding ? "Adding…" : "Add to Cart"} <MdShoppingBag size={24} />
           </button>
+
+          {feedback && (
+            <p
+              className={`text-sm font-label-bold ${
+                feedback.startsWith("Added")
+                  ? "text-primary"
+                  : "text-primary-container"
+              }`}
+            >
+              {feedback}
+            </p>
+          )}
         </div>
       </div>
     </div>

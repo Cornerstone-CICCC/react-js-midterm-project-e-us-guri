@@ -6,12 +6,16 @@ import { IoSearch, IoMoon } from "react-icons/io5";
 import { PiSun } from "react-icons/pi";
 import { useTheme } from "../contexts/theme/ThemeContext";
 import { useAuth } from "../contexts/auth/AuthContext";
+import { useCart } from "../contexts/cart/useCart";
 
 const Header = () => {
   const { darkMode, toggleDarkMode } = useTheme();
   const { user, logout } = useAuth();
+  const { items } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -58,9 +62,7 @@ const Header = () => {
       {/* NAVIGATION: */}
       <nav className="hidden md:flex gap-8">
         <Link className={getNavLinkClass("/")} to="/">Home</Link>
-        <Link className={getNavLinkClass("/category/artificial-grass")} to="/category/artificial-grass">Artificial Grass</Link>
-        <Link className={getNavLinkClass("/category/natural-grass")} to="/category/natural-grass">Natural Grass</Link>
-        <Link className={getNavLinkClass("/category/futsal")} to="/category/futsal">Futsal</Link>
+        <Link className={getNavLinkClass("/shop")} to="/shop">Shop</Link>
       </nav>
 
       {/* RIGHT SIDE: */}
@@ -77,11 +79,16 @@ const Header = () => {
         </div>
 
         {/* CART: */}
-        <Link 
-          to="/cart" 
-          className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center"
+        <Link
+          to="/cart"
+          className="relative text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center"
         >
           <MdOutlineShoppingCart size={24} />
+          {cartCount > 0 && (
+            <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold flex items-center justify-center leading-none shadow">
+              {cartCount > 99 ? "99+" : cartCount}
+            </span>
+          )}
         </Link>
 
         {/* PROFILE + DROPDOWN: */}
@@ -94,7 +101,7 @@ const Header = () => {
                 navigate("/login");
               }
             }}
-            className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center"
+            className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center cursor-pointer"
           >
             <CgProfile size={24} />
           </button>
@@ -113,7 +120,7 @@ const Header = () => {
 
               <button
                 onClick={handleLogout}
-                className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-surface-container-highest transition-colors"
+                className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-surface-container-highest transition-colors cursor-pointer"
               >
                 Log out
               </button>
@@ -124,7 +131,7 @@ const Header = () => {
         {/* THEME TOGGLE:*/}
         <button
           onClick={toggleDarkMode}
-          className="relative flex items-center justify-center w-11 h-11 rounded-full bg-surface-container-high border border-outline-variant/30 hover:scale-110 active:scale-95 transition-all duration-500 overflow-hidden"
+          className="relative flex items-center justify-center w-11 h-11 rounded-full bg-surface-container-high border border-outline-variant/30 hover:scale-110 active:scale-95 transition-all duration-500 overflow-hidden cursor-pointer"
         >
           <div className={`absolute transition-all duration-500 ${darkMode ? "rotate-0 opacity-100 scale-100" : "rotate-90 opacity-0 scale-0"}`}>
             <PiSun size={22} className="text-primary" />

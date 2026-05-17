@@ -150,7 +150,7 @@ const LoginPage = () => {
             <div className="flex mb-8">
               <button
                 onClick={() => switchTab(true)}
-                className={`flex-1 py-4 font-label-bold text-sm font-bold uppercase border-b-2 tracking-widest transition-colors ${
+                className={`flex-1 py-4 font-label-bold text-sm font-bold uppercase border-b-2 tracking-widest transition-colors cursor-pointer ${
                   isLogin
                     ? "border-primary-container text-white"
                     : "border-transparent text-on-surface-variant hover:text-on-surface"
@@ -160,7 +160,7 @@ const LoginPage = () => {
               </button>
               <button
                 onClick={() => switchTab(false)}
-                className={`flex-1 py-4 font-label-bold text-sm font-bold uppercase border-b-2 tracking-widest transition-colors ${
+                className={`flex-1 py-4 font-label-bold text-sm font-bold uppercase border-b-2 tracking-widest transition-colors cursor-pointer ${
                   !isLogin
                     ? "border-primary-container text-white"
                     : "border-transparent text-on-surface-variant hover:text-on-surface"
@@ -288,7 +288,7 @@ const LoginPage = () => {
               )}
 
               <button
-                className="w-full bg-primary-container text-on-primary-container py-5 rounded font-label-bold text-sm font-bold uppercase italic tracking-widest racing-button-glow hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="w-full bg-primary-container text-on-primary-container py-5 rounded font-label-bold text-sm font-bold uppercase italic tracking-widest racing-button-glow hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 type="submit"
                 disabled={submitting}
               >

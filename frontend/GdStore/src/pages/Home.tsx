@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   MdArrowForward,
   MdSportsSoccer,
@@ -11,13 +12,18 @@ const TerrainCard = ({
   subtitle,
   img,
   buttonText,
+  to,
 }: {
   title: string;
   subtitle: string;
   img: string;
   buttonText: string;
+  to: string;
 }) => (
-  <div className="relative h-[500px] overflow-hidden group cursor-pointer border-r border-outline-variant/10">
+  <Link
+    to={to}
+    className="relative h-[500px] overflow-hidden group cursor-pointer border-r border-outline-variant/10 block"
+  >
     <img
       src={img}
       alt={title}
@@ -31,11 +37,11 @@ const TerrainCard = ({
       <p className="text-white font-label-bold mt-4 opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">
         {subtitle}
       </p>
-      <button className="mt-8 border border-white text-white px-6 py-2 font-label-bold uppercase italic opacity-0 group-hover:opacity-100 transition-all">
+      <span className="mt-8 border border-white text-white px-6 py-2 font-label-bold uppercase italic opacity-0 group-hover:opacity-100 transition-all cursor-pointer">
         {buttonText}
-      </button>
+      </span>
     </div>
-  </div>
+  </Link>
 );
 
 const BrandLogo = ({ Icon, name }: { Icon: React.ElementType; name: string }) => (
@@ -74,10 +80,13 @@ export default function Home() {
             explosive traction.
           </p>
           <div className="flex flex-wrap gap-4">
-            <button className="bg-primary-container text-on-primary-container font-label-bold px-10 py-4 uppercase italic hover:scale-105 transition-all shadow-[0_0_20px_rgba(230,30,42,0.4)] active:scale-95">
+            <Link
+              to="/shop"
+              className="bg-primary-container text-on-primary-container font-label-bold px-10 py-4 uppercase italic hover:scale-105 transition-all shadow-[0_0_20px_rgba(230,30,42,0.4)] active:scale-95 cursor-pointer"
+            >
               Shop Now
-            </button>
-            <button className="border-2 border-white text-white font-label-bold px-10 py-4 uppercase italic hover:bg-white hover:text-black transition-all active:scale-95">
+            </Link>
+            <button className="border-2 border-white text-white font-label-bold px-10 py-4 uppercase italic hover:bg-white hover:text-black transition-all active:scale-95 cursor-pointer">
               Watch Film
             </button>
           </div>
@@ -95,10 +104,13 @@ export default function Home() {
               The latest drops from the world's leading labs.
             </p>
           </div>
-          <a className="font-label-bold text-primary flex items-center gap-2 group cursor-pointer" href="#">
+          <Link
+            to="/shop"
+            className="font-label-bold text-primary flex items-center gap-2 group cursor-pointer"
+          >
             VIEW ALL{" "}
             <MdArrowForward className="group-hover:translate-x-1 transition-transform" />
-          </a>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 h-auto md:h-[700px]">
@@ -192,18 +204,21 @@ export default function Home() {
             title="Firm Ground"
             subtitle="FOR NATURAL GRASS"
             buttonText="Explore"
+            to="/category/natural-grass"
             img="https://lh3.googleusercontent.com/aida-public/AB6AXuA65YXpnRPpAEZZGj7xvMhSlmDaRdWS-jgSb24xc8dB14tMcxUmR5EVZaEAfHgT7VIcihX5mRb2FB2Kett1VQCq2ZbdfZsW-8xZJUQJIs3wp5eG1g-wWZAB7SRg3D-Aw3s84UuDynkl4R7L1HW8FjlUc6G0nyDLl4Cz6P1NX1Qf0SUwxePn2iUKEzQRX29FEXa82TMhYLvotLtyHcUaK5HnUYtWUqe0xZNtImtevhsja1FC0U-YfGali55T3rnj3ZdrOz1rbm4eq1er"
           />
           <TerrainCard
             title="Futsal"
             subtitle="FOR FLAT SOLE"
             buttonText="Explore"
+            to="/category/futsal"
             img="https://i.pinimg.com/736x/bf/61/bd/bf61bd125649fbdb1d0aeaaac6b23c93.jpg"
           />
           <TerrainCard
             title="Turf"
             subtitle="FOR ARTIFICIAL GRASS"
             buttonText="Explore"
+            to="/category/artificial-grass"
             img="https://lh3.googleusercontent.com/aida-public/AB6AXuDAMqRRSEEZZ_la1gYwjGCLuWVsAllSSahQvmPf6I3dRJitRJwsQ3g-t4JxPfTwI9q3JrA3vKRcggZJQ-G5hFfwZEVX8viv_DlYFerzzWjr2LBvCgU7oCHcKcxhC6pE8-5yx7pyxGIv8k7CHxiUsjOKweSZeG59XdXXjs8A6yCgoW7AuR6xww614p-MiQAN9oQjmgaFVnuoTJT2Ng0lA_t8hyLxTTkixhpmSIrH3UBNKHXzco560bwfBqVBqswAXf24lCZ9kYe3525j"
           />
         </div>
@@ -243,7 +258,7 @@ export default function Home() {
                 placeholder="Your email address"
                 type="email"
               />
-              <button className="bg-primary-container text-on-primary-container font-label-bold px-6 py-3 rounded-full uppercase italic hover:brightness-110 active:scale-95 transition-all">
+              <button className="bg-primary-container text-on-primary-container font-label-bold px-6 py-3 rounded-full uppercase italic hover:brightness-110 active:scale-95 transition-all cursor-pointer">
                 JOIN
               </button>
             </div>

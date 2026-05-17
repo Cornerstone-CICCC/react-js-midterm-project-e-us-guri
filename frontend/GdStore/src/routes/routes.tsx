@@ -5,6 +5,8 @@ import BrowseCleats from "../pages/BrowseCleats";
 import ArtificialGrass from "../pages/ArtificalGrass";
 import NaturalGrass from "../pages/NaturalGrass";
 import Futsal from "../pages/Futsal";
+import ProductDetail from "../pages/Products/ProductDetail";
+import Cart from "../pages/Products/Cart";
 import Admin from "../pages/Admin";
 import NotFound from "../pages/NotFound";
 import Header from "../components/Header";
@@ -45,6 +47,8 @@ function AppLayout() {
           <Route path="/category/artificial-grass" element={<ArtificialGrass />} />
           <Route path="/category/natural-grass" element={<NaturalGrass />} />
           <Route path="/category/futsal" element={<Futsal />} />
+          <Route path="/shop/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
           
           <Route
             path="/admin"

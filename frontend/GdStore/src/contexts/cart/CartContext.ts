@@ -1,25 +1,18 @@
-import { createContext } from 'react';
+import { createContext } from "react";
+import type { CartItem } from "../../services/cartService";
 
-// DummyJSON
-export interface Product {
-  id: number | string;
-  title: string;
-  price: number;
-  thumbnail: string;
+export type { CartItem };
+
+export interface CartContextType {
+  items: CartItem[];
+  total: number;
+  loading: boolean;
+  error: string | null;
+  addItem: (productId: string, size: string, quantity?: number) => Promise<void>;
+  updateQuantity: (itemId: number, quantity: number) => Promise<void>;
+  removeItem: (itemId: number) => Promise<void>;
+  clear: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
-// Cart Items
-export interface CartItem extends Product {
-  productId: number;
-  quantity: number;
-}
-
-type CartContextType = {
-  cart: CartItem[];
-  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
-};
-
-export const CartContext = createContext<CartContextType>({
-  cart: [],
-  setCart: () => {},
-});
+export const CartContext = createContext<CartContextType | null>(null);
