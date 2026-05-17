@@ -5,8 +5,8 @@ import { checkout, listOrders, getOrder } from '../controllers/order.controller.
 
 const router = Router();
 
-// All order routes require authentication + client role
-router.use(authMiddleware, requireRole('client'));
+// All order routes require authentication; both clients and admins can purchase
+router.use(authMiddleware, requireRole('client', 'admin'));
 
 router.post('/checkout', checkout);
 router.get('/', listOrders);

@@ -1,16 +1,17 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { useAuth } from "../contexts/auth/AuthContext";
 import { UploadButton } from "../lib/uploadthing";
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   brand: string;
   price: string;
   description: string | null;
   image_url: string | null;
-  category: "firm-ground" | "soft-ground" | "turf" | "indoor";
+  category: "artificial-grass" | "natural-grass" | "futsal";
   sizes: string[];
   stock: number;
 }
@@ -23,17 +24,15 @@ interface ProductsResponse {
 }
 
 const CATEGORIES: Product["category"][] = [
-  "firm-ground",
-  "soft-ground",
-  "turf",
-  "indoor",
+  "artificial-grass",
+  "natural-grass",
+  "futsal",
 ];
 
 const CATEGORY_LABEL: Record<Product["category"], string> = {
-  "firm-ground": "Firm Ground",
-  "soft-ground": "Soft Ground",
-  turf: "Turf",
-  indoor: "Indoor",
+  "artificial-grass": "Artificial Grass",
+  "natural-grass": "Natural Grass",
+  futsal: "Futsal",
 };
 
 const NAV_ITEMS = [
@@ -46,7 +45,8 @@ const NAV_ITEMS = [
 
 function skuFor(p: Product) {
   const prefix = p.brand.slice(0, 3).toUpperCase();
-  return `GD-${prefix}-${String(p.id).padStart(3, "0")}`;
+  const shortId = p.id.replace(/-/g, "").slice(0, 6).toUpperCase();
+  return `GD-${prefix}-${shortId}`;
 }
 
 function stockBar(stock: number) {
@@ -55,7 +55,8 @@ function stockBar(stock: number) {
 }
 
 const Admin = () => {
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -64,6 +65,28 @@ const Admin = () => {
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState<Product | null>(null);
+
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        accountMenuRef.current &&
+        !accountMenuRef.current.contains(e.target as Node)
+      ) {
+        setAccountMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleLogout = async () => {
+    setAccountMenuOpen(false);
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   const fetchProducts = () => {
     setLoading(true);
@@ -133,7 +156,7 @@ const Admin = () => {
         <div className="px-4 mt-auto">
           <button
             onClick={() => setAddOpen(true)}
-            className="w-full bg-primary-container text-on-primary-container font-label-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary-container/20 uppercase italic"
+            className="w-full bg-primary-container text-on-primary-container font-label-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary-container/20 uppercase italic cursor-pointer"
           >
             <span className="material-symbols-outlined">add</span>
             Add New Product
@@ -172,12 +195,42 @@ const Admin = () => {
                 className="bg-surface-container border-none focus:ring-2 focus:ring-primary-container text-on-surface pl-10 pr-4 py-2 rounded-lg w-64 outline-none transition-all"
               />
             </div>
-            <button className="text-on-surface-variant hover:text-primary transition-all hover:scale-110">
+            <button className="text-on-surface-variant hover:text-primary transition-all hover:scale-110 cursor-pointer">
               <span className="material-symbols-outlined">notifications</span>
             </button>
-            <button className="text-on-surface-variant hover:text-primary transition-all hover:scale-110">
-              <span className="material-symbols-outlined">account_circle</span>
-            </button>
+            <div className="relative" ref={accountMenuRef}>
+              <button
+                onClick={() => setAccountMenuOpen((v) => !v)}
+                className="text-on-surface-variant hover:text-primary transition-all hover:scale-110 cursor-pointer"
+                aria-haspopup="menu"
+                aria-expanded={accountMenuOpen}
+              >
+                <span className="material-symbols-outlined">account_circle</span>
+              </button>
+              {accountMenuOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-2 w-56 bg-surface-container-low border border-outline-variant/30 rounded-xl shadow-2xl overflow-hidden z-50"
+                >
+                  <div className="px-4 py-3 border-b border-outline-variant/30">
+                    <p className="font-label-bold text-on-surface truncate text-sm">
+                      {user?.email ?? "Admin"}
+                    </p>
+                    <p className="text-xs text-on-surface-variant">Lead Admin</p>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    role="menuitem"
+                    className="w-full text-left px-4 py-3 text-sm font-label-bold uppercase italic text-primary-container hover:bg-surface-container-highest transition-colors flex items-center gap-2 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">
+                      logout
+                    </span>
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
@@ -241,11 +294,11 @@ const Admin = () => {
                 Product Inventory
               </h3>
               <div className="flex gap-3">
-                <button className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface font-label-bold px-4 py-2 border border-outline-variant rounded-lg transition-colors">
+                <button className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface font-label-bold px-4 py-2 border border-outline-variant rounded-lg transition-colors cursor-pointer">
                   <span className="material-symbols-outlined">filter_list</span>
                   Filter
                 </button>
-                <button className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface font-label-bold px-4 py-2 border border-outline-variant rounded-lg transition-colors">
+                <button className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface font-label-bold px-4 py-2 border border-outline-variant rounded-lg transition-colors cursor-pointer">
                   <span className="material-symbols-outlined">download</span>
                   Export
                 </button>
@@ -343,7 +396,7 @@ const Admin = () => {
                             <div className="flex justify-end gap-2">
                               <button
                                 onClick={() => setEditing(p)}
-                                className="p-2 hover:bg-surface-container-highest rounded-full text-on-surface-variant hover:text-primary transition-all"
+                                className="p-2 hover:bg-surface-container-highest rounded-full text-on-surface-variant hover:text-primary transition-all cursor-pointer"
                                 aria-label={`Edit ${p.name}`}
                               >
                                 <span className="material-symbols-outlined text-base">
@@ -352,7 +405,7 @@ const Admin = () => {
                               </button>
                               <button
                                 onClick={() => setDeleting(p)}
-                                className="p-2 hover:bg-primary-container/20 rounded-full text-on-surface-variant hover:text-primary-container transition-all"
+                                className="p-2 hover:bg-primary-container/20 rounded-full text-on-surface-variant hover:text-primary-container transition-all cursor-pointer"
                                 aria-label={`Delete ${p.name}`}
                               >
                                 <span className="material-symbols-outlined text-base">
@@ -373,7 +426,7 @@ const Admin = () => {
                 Showing {filtered.length} of {total} products
               </p>
               <div className="flex gap-2">
-                <button className="p-2 rounded hover:bg-surface-container-highest transition-colors">
+                <button className="p-2 rounded hover:bg-surface-container-highest transition-colors cursor-pointer">
                   <span className="material-symbols-outlined">
                     chevron_left
                   </span>
@@ -381,7 +434,7 @@ const Admin = () => {
                 <button className="w-8 h-8 flex items-center justify-center bg-primary-container text-on-primary-container rounded font-bold">
                   1
                 </button>
-                <button className="p-2 rounded hover:bg-surface-container-highest transition-colors">
+                <button className="p-2 rounded hover:bg-surface-container-highest transition-colors cursor-pointer">
                   <span className="material-symbols-outlined">
                     chevron_right
                   </span>
@@ -451,7 +504,7 @@ function ProductFormModal({
   const [brand, setBrand] = useState(initial?.brand ?? "");
   const [price, setPrice] = useState(initial?.price ?? "");
   const [category, setCategory] = useState<Product["category"]>(
-    initial?.category ?? "firm-ground"
+    initial?.category ?? "natural-grass"
   );
   const [stock, setStock] = useState(String(initial?.stock ?? 0));
   const [sizes, setSizes] = useState((initial?.sizes ?? []).join(", "));
@@ -594,7 +647,7 @@ function ProductFormModal({
                 type="button"
                 onClick={removeImage}
                 disabled={removingImage}
-                className="px-3 py-1.5 text-xs uppercase tracking-widest font-label-bold rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors disabled:opacity-50"
+                className="px-3 py-1.5 text-xs uppercase tracking-widest font-label-bold rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
               >
                 {removingImage ? "Removing…" : "Remove"}
               </button>
@@ -648,14 +701,14 @@ function ProductFormModal({
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="px-5 py-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors disabled:opacity-50"
+            className="px-5 py-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="px-5 py-2 rounded-lg bg-primary-container text-on-primary-container font-label-bold uppercase italic hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100"
+            className="px-5 py-2 rounded-lg bg-primary-container text-on-primary-container font-label-bold uppercase italic hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100 cursor-pointer disabled:cursor-not-allowed"
           >
             {submitting ? "Saving…" : isEdit ? "Save Changes" : "Create Product"}
           </button>
@@ -713,14 +766,14 @@ function DeleteConfirmModal({
         <button
           onClick={onClose}
           disabled={submitting}
-          className="px-5 py-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors disabled:opacity-50"
+          className="px-5 py-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           onClick={confirm}
           disabled={submitting}
-          className="px-5 py-2 rounded-lg bg-primary-container text-on-primary-container font-label-bold uppercase italic hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100"
+          className="px-5 py-2 rounded-lg bg-primary-container text-on-primary-container font-label-bold uppercase italic hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100 cursor-pointer disabled:cursor-not-allowed"
         >
           {submitting ? "Deleting…" : "Delete"}
         </button>
@@ -751,7 +804,7 @@ function ModalShell({ title, onClose, children }: ModalShellProps) {
           </h3>
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface transition-colors"
+            className="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface transition-colors cursor-pointer"
             aria-label="Close"
           >
             <span className="material-symbols-outlined">close</span>

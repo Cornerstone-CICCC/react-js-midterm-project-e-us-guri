@@ -11,8 +11,8 @@ import {
 
 const router = Router();
 
-// All cart routes require authentication + client role
-router.use(authMiddleware, requireRole('client'));
+// All cart routes require authentication; both clients and admins can shop
+router.use(authMiddleware, requireRole('client', 'admin'));
 
 router.get('/', getCart);
 router.post('/items', addItem);

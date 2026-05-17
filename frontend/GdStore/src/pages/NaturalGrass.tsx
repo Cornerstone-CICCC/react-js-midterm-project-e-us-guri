@@ -1,11 +1,9 @@
 import { Sidebar } from "../components/Sidebar";
 import { ProductCard } from "../components/ProductCard";
-import { cleatsData } from "../data/CleatsData";
+import { useProducts } from "../hooks/useProducts";
 
 export default function NaturalGrass() {
-  const naturalGrassCleats = cleatsData.filter(
-    (product) => product.type === "Natural grass"
-  );
+  const { products, loading, error } = useProducts("natural-grass");
 
   return (
     <div className="bg-background text-on-background min-h-screen pt-24">
@@ -19,22 +17,30 @@ export default function NaturalGrass() {
               Natural Grass Cleats
             </h1>
             <p className="text-on-surface-variant font-label-bold">
-              Showing {naturalGrassCleats.length} cleats...
+              {loading
+                ? "Loading cleats…"
+                : `Showing ${products.length} cleats`}
             </p>
           </div>
 
-          {naturalGrassCleats.length > 0 ? (
+          {error && (
+            <p className="text-primary-container font-label-bold">{error}</p>
+          )}
+
+          {!loading && products.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
-              {naturalGrassCleats.map((product) => (
+              {products.map((product) => (
                 <ProductCard key={product.id} {...product} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 border border-dashed border-outline-variant/30 rounded-xl">
-              <p className="text-on-surface-variant font-body-lg">
-                No natural grass cleats found.
-              </p>
-            </div>
+            !loading && (
+              <div className="text-center py-12 border border-dashed border-outline-variant/30 rounded-xl">
+                <p className="text-on-surface-variant font-body-lg">
+                  No natural grass cleats found.
+                </p>
+              </div>
+            )
           )}
         </section>
       </main>

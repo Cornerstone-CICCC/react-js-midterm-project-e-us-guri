@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { FaInstagram } from "react-icons/fa";
 import { FaWhatsapp} from "react-icons/fa";
 import { FaFacebook } from "react-icons/fa";
@@ -26,10 +27,10 @@ const Footer = () => {
           </h4>
 
           <ul className="space-y-4 text-on-surface-variant dark:text-secondary text-sm">
-            <li><a className="hover:text-primary transition-colors" href="#">Firm Ground</a></li>
-            <li><a className="hover:text-primary transition-colors" href="#">Soft Ground</a></li>
-            <li><a className="hover:text-primary transition-colors" href="#">Artificial Turf</a></li>
-            <li><a className="hover:text-primary transition-colors" href="#">Indoor Court</a></li>
+            <li><Link className="hover:text-primary transition-colors" to="/category/natural-grass">Natural Grass</Link></li>
+            <li><Link className="hover:text-primary transition-colors" to="/category/artificial-grass">Artificial Grass</Link></li>
+            <li><Link className="hover:text-primary transition-colors" to="/category/futsal">Futsal</Link></li>
+            <li><Link className="hover:text-primary transition-colors" to="/shop">All Cleats</Link></li>
           </ul>
         </div>
 
