@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { IoSearch, IoMoon } from "react-icons/io5";
@@ -11,11 +11,11 @@ const Header = () => {
   const { darkMode, toggleDarkMode } = useTheme();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (
@@ -35,27 +35,35 @@ const Header = () => {
     navigate("/login", { replace: true });
   };
 
+  const getNavLinkClass = (path: string) => {
+    const baseClass = "font-bold hover:scale-105 transition-all duration-300 active:scale-95 ";
+    if (location.pathname === path) {
+      return baseClass + "text-primary border-b-2 border-primary";
+    }
+    return baseClass + "text-on-surface-variant dark:text-secondary hover:text-primary";
+  };
+
   return (
     <header className="bg-background dark:bg-background border-b border-outline-variant/30 shadow-md z-50 flex justify-between items-center px-6 md:px-12 py-4 w-full transition-colors duration-500">
 
       {/* LOGO: */}
-      <div>
+      <Link to="/" className="cursor-pointer">
         <img
           src="/images/gdstore-logo.png"
           alt="GD STORE"
           className="w-16 object-contain"
         />
-      </div>
+      </Link>
 
-      {/* NAVIGATION: (Mantido igual) */}
+      {/* NAVIGATION: */}
       <nav className="hidden md:flex gap-8">
-        <a className="text-primary-container dark:text-primary font-bold border-b-2 border-primary-container hover:scale-105 transition-all duration-300 active:scale-95" href="#">Home</a>
-        <a className="text-on-surface-variant dark:text-secondary font-bold hover:text-primary hover:scale-105 transition-all duration-300 active:scale-95" href="#">Artificial Grass</a>
-        <a className="text-on-surface-variant dark:text-secondary font-bold hover:text-primary hover:scale-105 transition-all duration-300 active:scale-95" href="#">Natural Grass</a>
-        <a className="text-on-surface-variant dark:text-secondary font-bold hover:text-primary hover:scale-105 transition-all duration-300 active:scale-95" href="#">Futsal</a>
+        <Link className={getNavLinkClass("/")} to="/">Home</Link>
+        <Link className={getNavLinkClass("/category/artificial-grass")} to="/category/artificial-grass">Artificial Grass</Link>
+        <Link className={getNavLinkClass("/category/natural-grass")} to="/category/natural-grass">Natural Grass</Link>
+        <Link className={getNavLinkClass("/category/futsal")} to="/category/futsal">Futsal</Link>
       </nav>
 
-      {/* RIGHT SIDE */}
+      {/* RIGHT SIDE: */}
       <div className="flex items-center gap-6">
 
         {/* SEARCH: */}
@@ -68,9 +76,9 @@ const Header = () => {
           />
         </div>
 
-        {/* CART:*/}
+        {/* CART: */}
         <Link 
-          to="/products/cart" 
+          to="/cart" 
           className="text-primary hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center"
         >
           <MdOutlineShoppingCart size={24} />
