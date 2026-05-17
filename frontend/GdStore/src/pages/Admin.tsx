@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { useAuth } from "../contexts/auth/AuthContext";
 import { UploadButton } from "../lib/uploadthing";
@@ -55,7 +56,8 @@ function stockBar(stock: number) {
 }
 
 const Admin = () => {
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -64,6 +66,28 @@ const Admin = () => {
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState<Product | null>(null);
+
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        accountMenuRef.current &&
+        !accountMenuRef.current.contains(e.target as Node)
+      ) {
+        setAccountMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleLogout = async () => {
+    setAccountMenuOpen(false);
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   const fetchProducts = () => {
     setLoading(true);
@@ -175,9 +199,39 @@ const Admin = () => {
             <button className="text-on-surface-variant hover:text-primary transition-all hover:scale-110">
               <span className="material-symbols-outlined">notifications</span>
             </button>
-            <button className="text-on-surface-variant hover:text-primary transition-all hover:scale-110">
-              <span className="material-symbols-outlined">account_circle</span>
-            </button>
+            <div className="relative" ref={accountMenuRef}>
+              <button
+                onClick={() => setAccountMenuOpen((v) => !v)}
+                className="text-on-surface-variant hover:text-primary transition-all hover:scale-110"
+                aria-haspopup="menu"
+                aria-expanded={accountMenuOpen}
+              >
+                <span className="material-symbols-outlined">account_circle</span>
+              </button>
+              {accountMenuOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-2 w-56 bg-surface-container-low border border-outline-variant/30 rounded-xl shadow-2xl overflow-hidden z-50"
+                >
+                  <div className="px-4 py-3 border-b border-outline-variant/30">
+                    <p className="font-label-bold text-on-surface truncate text-sm">
+                      {user?.email ?? "Admin"}
+                    </p>
+                    <p className="text-xs text-on-surface-variant">Lead Admin</p>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    role="menuitem"
+                    className="w-full text-left px-4 py-3 text-sm font-label-bold uppercase italic text-primary-container hover:bg-surface-container-highest transition-colors flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-base">
+                      logout
+                    </span>
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
