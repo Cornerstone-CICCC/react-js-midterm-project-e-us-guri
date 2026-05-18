@@ -118,6 +118,16 @@ const Header = () => {
                 </p>
               </div>
 
+              {user.role === "admin" && (
+                <Link
+                  to="/admin"
+                  onClick={() => setDropdownOpen(false)}
+                  className="block px-4 py-3 text-sm text-on-surface hover:bg-surface-container-highest transition-colors cursor-pointer border-b border-outline-variant/20"
+                >
+                  Admin Dashboard
+                </Link>
+              )}
+
               <button
                 onClick={handleLogout}
                 className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-surface-container-highest transition-colors cursor-pointer"

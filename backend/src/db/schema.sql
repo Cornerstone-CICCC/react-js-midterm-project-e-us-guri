@@ -45,13 +45,14 @@ CREATE TABLE IF NOT EXISTS cart_items (
 
 -- Orders: completed purchases
 CREATE TABLE IF NOT EXISTS orders (
-    id              SERIAL PRIMARY KEY,
-    user_id         UUID NOT NULL REFERENCES neon_auth.user(id) ON DELETE CASCADE,
-    status          VARCHAR(20) NOT NULL DEFAULT 'pending'
-                    CHECK (status IN ('pending', 'paid', 'shipped', 'delivered', 'cancelled')),
-    total_amount    NUMERIC(10, 2) NOT NULL CHECK (total_amount >= 0),
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id                          SERIAL PRIMARY KEY,
+    user_id                     UUID NOT NULL REFERENCES neon_auth.user(id) ON DELETE CASCADE,
+    status                      VARCHAR(20) NOT NULL DEFAULT 'pending'
+                                CHECK (status IN ('pending', 'paid', 'shipped', 'delivered', 'cancelled')),
+    total_amount                NUMERIC(10, 2) NOT NULL CHECK (total_amount >= 0),
+    stripe_payment_intent_id    VARCHAR(255) UNIQUE,
+    created_at                  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at                  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Order items: snapshot of products at purchase time
