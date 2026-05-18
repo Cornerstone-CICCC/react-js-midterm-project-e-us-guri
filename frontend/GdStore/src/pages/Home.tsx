@@ -204,21 +204,21 @@ export default function Home() {
             title="Firm Ground"
             subtitle="FOR NATURAL GRASS"
             buttonText="Explore"
-            to="/category/natural-grass"
+            to="/shop"
             img="https://lh3.googleusercontent.com/aida-public/AB6AXuA65YXpnRPpAEZZGj7xvMhSlmDaRdWS-jgSb24xc8dB14tMcxUmR5EVZaEAfHgT7VIcihX5mRb2FB2Kett1VQCq2ZbdfZsW-8xZJUQJIs3wp5eG1g-wWZAB7SRg3D-Aw3s84UuDynkl4R7L1HW8FjlUc6G0nyDLl4Cz6P1NX1Qf0SUwxePn2iUKEzQRX29FEXa82TMhYLvotLtyHcUaK5HnUYtWUqe0xZNtImtevhsja1FC0U-YfGali55T3rnj3ZdrOz1rbm4eq1er"
           />
           <TerrainCard
             title="Futsal"
             subtitle="FOR FLAT SOLE"
             buttonText="Explore"
-            to="/category/futsal"
+            to="/shop"
             img="https://i.pinimg.com/736x/bf/61/bd/bf61bd125649fbdb1d0aeaaac6b23c93.jpg"
           />
           <TerrainCard
             title="Turf"
             subtitle="FOR ARTIFICIAL GRASS"
             buttonText="Explore"
-            to="/category/artificial-grass"
+            to="/shop"
             img="https://lh3.googleusercontent.com/aida-public/AB6AXuDAMqRRSEEZZ_la1gYwjGCLuWVsAllSSahQvmPf6I3dRJitRJwsQ3g-t4JxPfTwI9q3JrA3vKRcggZJQ-G5hFfwZEVX8viv_DlYFerzzWjr2LBvCgU7oCHcKcxhC6pE8-5yx7pyxGIv8k7CHxiUsjOKweSZeG59XdXXjs8A6yCgoW7AuR6xww614p-MiQAN9oQjmgaFVnuoTJT2Ng0lA_t8hyLxTTkixhpmSIrH3UBNKHXzco560bwfBqVBqswAXf24lCZ9kYe3525j"
           />
         </div>

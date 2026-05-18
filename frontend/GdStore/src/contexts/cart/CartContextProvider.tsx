@@ -6,6 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { toast } from "react-hot-toast";
 import { CartContext, type CartItem } from "./CartContext";
 import {
   getCart,
@@ -26,8 +27,6 @@ export const CartContextProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Hold the latest items in a ref so action callbacks can stay stable
-  // (no `items` in their dependency array) while still seeing fresh data.
   const itemsRef = useRef<CartItem[]>(items);
   itemsRef.current = items;
 
@@ -60,9 +59,17 @@ export const CartContextProvider = ({ children }: { children: ReactNode }) => {
 
   const addItem = useCallback(
     async (productId: string, size: string, quantity = 1) => {
-      if (!token) throw new Error("Sign in to add items to your cart");
-      await addCartItem(token, { productId, size, quantity });
-      await refresh({ silent: true });
+      if (!token) {
+        toast.error("Sign in to add items to your cart");
+        throw new Error("Sign in to add items to your cart");
+      }
+      try {
+        await addCartItem(token, { productId, size, quantity });
+        await refresh({ silent: true });
+        toast.success("Cleat added to cart!");
+      } catch {
+        toast.error("Error! Try again later.");
+      }
     },
     [token, refresh]
   );
@@ -78,6 +85,7 @@ export const CartContextProvider = ({ children }: { children: ReactNode }) => {
       try {
         await updateCartItem(token, itemId, quantity);
       } catch {
+        toast.error("Error! Try again later.");
         refresh({ silent: true });
       }
     },
@@ -87,12 +95,18 @@ export const CartContextProvider = ({ children }: { children: ReactNode }) => {
   const removeItem = useCallback(
     async (itemId: number) => {
       if (!token) return;
+      
+      const targetItem = itemsRef.current.find((it) => it.id === itemId);
+      const itemName = targetItem?.name || "Product"; 
+
       const next = itemsRef.current.filter((it) => it.id !== itemId);
       setItems(next);
       setTotal(recomputeTotal(next));
       try {
         await removeCartItem(token, itemId);
+        toast.error(`${itemName} removed from the cart!`);
       } catch {
+        toast.error("Error! Try again later.");
         refresh({ silent: true });
       }
     },
@@ -101,8 +115,13 @@ export const CartContextProvider = ({ children }: { children: ReactNode }) => {
 
   const clear = useCallback(async () => {
     if (!token) return;
-    await clearCart(token);
-    await refresh({ silent: true });
+    try {
+      await clearCart(token);
+      await refresh({ silent: true });
+      toast.success("Cart successfully cleaned!");
+    } catch {
+      toast.error("Error! Try again later.");
+    }
   }, [token, refresh]);
 
   const refreshPublic = useCallback(() => refresh(), [refresh]);
