@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Fragment, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { useAuth } from "../contexts/auth/AuthContext";
 import { UploadButton } from "../lib/uploadthing";
+import { listAllOrders, type AdminOrder } from "../services/ordersService";
+import { getAdminStats, type AdminStats } from "../services/adminService";
 
 interface Product {
   id: string;
@@ -35,13 +37,23 @@ const CATEGORY_LABEL: Record<Product["category"], string> = {
   futsal: "Futsal",
 };
 
-const NAV_ITEMS = [
-  { icon: "inventory_2", label: "Inventory", active: true },
-  { icon: "receipt_long", label: "Orders", active: false },
-  { icon: "leaderboard", label: "Analytics", active: false },
-  { icon: "group", label: "Customers", active: false },
-  { icon: "settings", label: "Settings", active: false },
+type AdminTab = "inventory" | "orders" | "analytics" | "customers" | "settings";
+
+const NAV_ITEMS: { icon: string; label: string; tab: AdminTab }[] = [
+  { icon: "inventory_2", label: "Inventory", tab: "inventory" },
+  { icon: "receipt_long", label: "Orders", tab: "orders" },
+  { icon: "leaderboard", label: "Analytics", tab: "analytics" },
+  { icon: "group", label: "Customers", tab: "customers" },
+  { icon: "settings", label: "Settings", tab: "settings" },
 ];
+
+const ORDER_STATUS_STYLES: Record<AdminOrder["status"], string> = {
+  pending: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30",
+  paid: "bg-primary/15 text-primary border-primary/30",
+  shipped: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+  delivered: "bg-green-500/15 text-green-400 border-green-500/30",
+  cancelled: "bg-red-500/15 text-red-400 border-red-500/30",
+};
 
 function skuFor(p: Product) {
   const prefix = p.brand.slice(0, 3).toUpperCase();
@@ -57,6 +69,7 @@ function stockBar(stock: number) {
 const Admin = () => {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<AdminTab>("inventory");
   const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -68,6 +81,8 @@ const Admin = () => {
 
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
+
+  const [stats, setStats] = useState<AdminStats | null>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -106,6 +121,10 @@ const Admin = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    getAdminStats(token).then(setStats).catch(() => setStats(null));
+  }, [token, products]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return products;
@@ -136,21 +155,25 @@ const Admin = () => {
         </div>
         <nav className="flex-1">
           <ul className="space-y-1">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.label}>
-                <a
-                  href="#"
-                  className={
-                    item.active
-                      ? "flex items-center gap-4 bg-primary-container text-on-primary-container font-label-bold rounded-r-full mr-4 p-4"
-                      : "flex items-center gap-4 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface p-4 transition-all hover:translate-x-2"
-                  }
-                >
-                  <span className="material-symbols-outlined">{item.icon}</span>
-                  <span>{item.label}</span>
-                </a>
-              </li>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeTab === item.tab;
+              return (
+                <li key={item.label}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab(item.tab)}
+                    className={
+                      isActive
+                        ? "w-full flex items-center gap-4 bg-primary-container text-on-primary-container font-label-bold rounded-r-full mr-4 p-4 cursor-pointer"
+                        : "w-full flex items-center gap-4 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface p-4 transition-all hover:translate-x-2 cursor-pointer"
+                    }
+                  >
+                    <span className="material-symbols-outlined">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </nav>
         <div className="px-4 mt-auto">
@@ -180,21 +203,23 @@ const Admin = () => {
         {/* Top bar */}
         <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-outline-variant/30 flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4">
           <h2 className="font-headline-lg text-2xl md:text-3xl text-on-surface italic uppercase">
-            Inventory
+            {NAV_ITEMS.find((n) => n.tab === activeTab)?.label ?? "Inventory"}
           </h2>
           <div className="flex items-center gap-gutter">
-            <div className="relative hidden md:block">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
-                search
-              </span>
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                type="text"
-                placeholder="Search cleats..."
-                className="bg-surface-container border-none focus:ring-2 focus:ring-primary-container text-on-surface pl-10 pr-4 py-2 rounded-lg w-64 outline-none transition-all"
-              />
-            </div>
+            {activeTab === "inventory" && (
+              <div className="relative hidden md:block">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
+                  search
+                </span>
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  type="text"
+                  placeholder="Search cleats..."
+                  className="bg-surface-container border-none focus:ring-2 focus:ring-primary-container text-on-surface pl-10 pr-4 py-2 rounded-lg w-64 outline-none transition-all"
+                />
+              </div>
+            )}
             <button className="text-on-surface-variant hover:text-primary transition-all hover:scale-110 cursor-pointer">
               <span className="material-symbols-outlined">notifications</span>
             </button>
@@ -218,6 +243,28 @@ const Admin = () => {
                     </p>
                     <p className="text-xs text-on-surface-variant">Lead Admin</p>
                   </div>
+                  <Link
+                    to="/"
+                    onClick={() => setAccountMenuOpen(false)}
+                    role="menuitem"
+                    className="w-full text-left px-4 py-3 text-sm font-label-bold uppercase italic text-on-surface hover:bg-surface-container-highest transition-colors flex items-center gap-2 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">
+                      home
+                    </span>
+                    Home
+                  </Link>
+                  <Link
+                    to="/shop"
+                    onClick={() => setAccountMenuOpen(false)}
+                    role="menuitem"
+                    className="w-full text-left px-4 py-3 text-sm font-label-bold uppercase italic text-on-surface hover:bg-surface-container-highest transition-colors flex items-center gap-2 cursor-pointer border-b border-outline-variant/30"
+                  >
+                    <span className="material-symbols-outlined text-base">
+                      storefront
+                    </span>
+                    Shop
+                  </Link>
                   <button
                     onClick={handleLogout}
                     role="menuitem"
@@ -235,6 +282,21 @@ const Admin = () => {
         </header>
 
         <div className="p-margin-mobile md:p-margin-desktop">
+          {activeTab === "orders" && <OrdersTab token={token} />}
+
+          {activeTab !== "inventory" && activeTab !== "orders" && (
+            <div className="bg-surface-container-low rounded-xl p-12 text-center border border-outline-variant/20">
+              <p className="text-on-surface-variant font-label-bold uppercase tracking-widest text-sm">
+                Coming Soon
+              </p>
+              <p className="text-on-surface mt-2">
+                The {NAV_ITEMS.find((n) => n.tab === activeTab)?.label} view is not built yet.
+              </p>
+            </div>
+          )}
+
+          {activeTab === "inventory" && (
+          <>
           {/* Bento analytics grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-12">
             <div className="md:col-span-2 bg-surface-container-low rounded-xl p-6 border border-outline-variant/20 shadow-xl relative overflow-hidden group">
@@ -248,11 +310,26 @@ const Admin = () => {
               </p>
               <div className="flex items-baseline gap-4">
                 <h3 className="font-display-lg text-5xl md:text-6xl text-primary-container italic">
-                  $124,500
+                  {stats
+                    ? `$${stats.monthlySales.current.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}`
+                    : "—"}
                 </h3>
-                <span className="bg-primary/20 text-primary px-2 py-1 rounded text-xs font-bold">
-                  +14.2%
-                </span>
+                {stats?.monthlySales.deltaPct !== null &&
+                  stats?.monthlySales.deltaPct !== undefined && (
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-bold ${
+                        stats.monthlySales.deltaPct >= 0
+                          ? "bg-primary/20 text-primary"
+                          : "bg-red-500/20 text-red-400"
+                      }`}
+                    >
+                      {stats.monthlySales.deltaPct >= 0 ? "+" : ""}
+                      {stats.monthlySales.deltaPct.toFixed(1)}%
+                    </span>
+                  )}
               </div>
               <p className="text-on-surface-variant text-sm mt-4">
                 Performance tracking against previous 30-day window.
@@ -279,10 +356,14 @@ const Admin = () => {
                 Active Orders
               </p>
               <h3 className="font-headline-xl text-4xl md:text-5xl text-on-surface italic">
-                42
+                {stats
+                  ? String(stats.activeOrders.total).padStart(2, "0")
+                  : "—"}
               </h3>
               <p className="text-on-surface-variant text-sm mt-4 italic opacity-70">
-                12 Pending Shipment
+                {stats
+                  ? `${stats.activeOrders.pendingShipment} Pending Shipment`
+                  : "—"}
               </p>
             </div>
           </div>
@@ -442,6 +523,8 @@ const Admin = () => {
               </div>
             </div>
           </section>
+          </>
+          )}
         </div>
 
         {/* Decorative gradients */}
@@ -485,6 +568,195 @@ const Admin = () => {
     </div>
   );
 };
+
+function OrdersTab({ token }: { token: string | null }) {
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<number | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    listAllOrders(token)
+      .then(setOrders)
+      .catch((err) =>
+        setError(err instanceof Error ? err.message : "Failed to load orders")
+      )
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  const stats = useMemo(() => {
+    const revenue = orders.reduce((sum, o) => sum + Number(o.total_amount), 0);
+    const pending = orders.filter((o) => o.status === "pending").length;
+    return { count: orders.length, revenue, pending };
+  }, [orders]);
+
+  return (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-12">
+        <div className="bg-surface-container-low rounded-xl p-6 border border-outline-variant/20 shadow-xl">
+          <p className="text-on-surface-variant font-label-bold uppercase tracking-widest mb-2 text-xs">
+            Total Orders
+          </p>
+          <h3 className="font-headline-xl text-4xl md:text-5xl text-on-surface italic">
+            {String(stats.count).padStart(2, "0")}
+          </h3>
+        </div>
+        <div className="bg-surface-container-low rounded-xl p-6 border border-outline-variant/20 shadow-xl">
+          <p className="text-on-surface-variant font-label-bold uppercase tracking-widest mb-2 text-xs">
+            Revenue
+          </p>
+          <h3 className="font-headline-xl text-4xl md:text-5xl text-primary-container italic">
+            ${stats.revenue.toFixed(2)}
+          </h3>
+        </div>
+        <div className="bg-surface-container-low rounded-xl p-6 border border-outline-variant/20 shadow-xl border-l-4 border-l-primary-container">
+          <p className="text-on-surface-variant font-label-bold uppercase tracking-widest mb-2 text-xs">
+            Pending
+          </p>
+          <h3 className="font-headline-xl text-4xl md:text-5xl text-on-surface italic">
+            {String(stats.pending).padStart(2, "0")}
+          </h3>
+        </div>
+      </div>
+
+      <section className="bg-surface-container rounded-xl shadow-2xl overflow-hidden border border-outline-variant/20">
+        <div className="p-6 border-b border-outline-variant/30 flex justify-between items-center">
+          <h3 className="font-headline-lg text-xl md:text-2xl text-on-surface uppercase italic">
+            All Orders
+          </h3>
+        </div>
+
+        {error && (
+          <p className="px-6 py-4 text-primary-container font-label-bold">
+            {error}
+          </p>
+        )}
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-surface-container-high/50 text-on-surface-variant uppercase text-xs tracking-widest">
+                <th className="px-6 py-4 font-label-bold">Order #</th>
+                <th className="px-6 py-4 font-label-bold">Customer</th>
+                <th className="px-6 py-4 font-label-bold">Items</th>
+                <th className="px-6 py-4 font-label-bold">Total</th>
+                <th className="px-6 py-4 font-label-bold">Status</th>
+                <th className="px-6 py-4 font-label-bold">Date</th>
+                <th className="px-6 py-4 font-label-bold text-right">Details</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant/20">
+              {loading && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="px-6 py-12 text-center text-on-surface-variant"
+                  >
+                    Loading orders…
+                  </td>
+                </tr>
+              )}
+              {!loading && orders.length === 0 && !error && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="px-6 py-12 text-center text-on-surface-variant"
+                  >
+                    No orders yet.
+                  </td>
+                </tr>
+              )}
+              {!loading &&
+                orders.map((o) => {
+                  const itemCount = o.items.reduce((s, i) => s + i.quantity, 0);
+                  const isExpanded = expanded === o.id;
+                  return (
+                    <Fragment key={o.id}>
+                      <tr className="hover:bg-surface-variant/30 transition-colors">
+                        <td className="px-6 py-4 font-label-bold text-on-surface">
+                          #{o.id}
+                        </td>
+                        <td className="px-6 py-4 text-on-surface-variant">
+                          {o.user_email ?? "—"}
+                        </td>
+                        <td className="px-6 py-4 text-on-surface">
+                          {itemCount}
+                        </td>
+                        <td className="px-6 py-4 font-label-bold text-primary-container">
+                          ${Number(o.total_amount).toFixed(2)}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-block px-3 py-1 text-xs font-bold uppercase tracking-widest rounded border ${ORDER_STATUS_STYLES[o.status]}`}
+                          >
+                            {o.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-on-surface-variant text-sm">
+                          {new Date(o.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={() =>
+                              setExpanded(isExpanded ? null : o.id)
+                            }
+                            className="p-2 hover:bg-surface-container-highest rounded-full text-on-surface-variant hover:text-primary transition-all cursor-pointer"
+                            aria-label={
+                              isExpanded ? "Collapse details" : "Expand details"
+                            }
+                          >
+                            <span className="material-symbols-outlined text-base">
+                              {isExpanded ? "expand_less" : "expand_more"}
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+                      {isExpanded && (
+                        <tr>
+                          <td
+                            colSpan={7}
+                            className="px-6 py-4 bg-surface-container-low"
+                          >
+                            <div className="space-y-2">
+                              {o.items.map((item) => (
+                                <div
+                                  key={item.id}
+                                  className="flex items-center justify-between text-sm"
+                                >
+                                  <div>
+                                    <span className="font-label-bold text-on-surface">
+                                      {item.brand} {item.name}
+                                    </span>
+                                    <span className="text-on-surface-variant ml-2">
+                                      · Size {item.size} · ×{item.quantity}
+                                    </span>
+                                  </div>
+                                  <span className="font-label-bold text-on-surface">
+                                    ${(Number(item.price) * item.quantity).toFixed(2)}
+                                  </span>
+                                </div>
+                              ))}
+                              {o.stripe_payment_intent_id && (
+                                <p className="text-xs text-on-surface-variant pt-2 border-t border-outline-variant/20 font-mono">
+                                  Stripe: {o.stripe_payment_intent_id}
+                                </p>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </>
+  );
+}
 
 interface ProductFormModalProps {
   token: string | null;

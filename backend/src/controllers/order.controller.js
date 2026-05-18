@@ -4,9 +4,41 @@ import { createError } from '../middleware/errorHandler.js';
 // POST /api/orders/checkout
 export async function checkout(req, res, next) {
   const client = await pool.connect();
+  const { paymentIntentId } = req.body ?? {};
 
   try {
     await client.query('BEGIN');
+
+    // Reject duplicate checkouts for the same Stripe charge.
+    // The UNIQUE constraint on orders.stripe_payment_intent_id would
+    // also catch this, but checking early gives a cleaner error.
+    if (paymentIntentId) {
+      const existing = await client.query(
+        'SELECT id FROM orders WHERE stripe_payment_intent_id = $1',
+        [paymentIntentId]
+      );
+      if (existing.rows.length > 0) {
+        await client.query('ROLLBACK');
+        const completeOrder = await query(
+          `SELECT o.*,
+                  json_agg(json_build_object(
+                    'id', oi.id,
+                    'product_id', oi.product_id,
+                    'name', oi.name,
+                    'brand', oi.brand,
+                    'price', oi.price,
+                    'size', oi.size,
+                    'quantity', oi.quantity
+                  )) AS items
+           FROM orders o
+           JOIN order_items oi ON oi.order_id = o.id
+           WHERE o.id = $1
+           GROUP BY o.id`,
+          [existing.rows[0].id]
+        );
+        return res.status(200).json(completeOrder.rows[0]);
+      }
+    }
 
     // Get user's cart
     const cartResult = await client.query(
@@ -54,12 +86,18 @@ export async function checkout(req, res, next) {
       0
     );
 
-    // Create order
+    // Create order. If a Stripe PaymentIntent confirmed before this call,
+    // mark the order as 'paid' immediately and store the intent id.
     const orderResult = await client.query(
-      `INSERT INTO orders (user_id, status, total_amount)
-       VALUES ($1, 'pending', $2)
+      `INSERT INTO orders (user_id, status, total_amount, stripe_payment_intent_id)
+       VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [req.userId, totalAmount.toFixed(2)]
+      [
+        req.userId,
+        paymentIntentId ? 'paid' : 'pending',
+        totalAmount.toFixed(2),
+        paymentIntentId ?? null,
+      ]
     );
 
     const order = orderResult.rows[0];
@@ -132,6 +170,35 @@ export async function listOrders(req, res, next) {
        GROUP BY o.id
        ORDER BY o.created_at DESC`,
       [req.userId]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/orders/admin  (admin only)
+// Lists every order in the system with the customer's email.
+export async function listAllOrders(req, res, next) {
+  try {
+    const result = await query(
+      `SELECT o.*,
+              u.email AS user_email,
+              json_agg(json_build_object(
+                'id', oi.id,
+                'product_id', oi.product_id,
+                'name', oi.name,
+                'brand', oi.brand,
+                'price', oi.price,
+                'size', oi.size,
+                'quantity', oi.quantity
+              )) AS items
+       FROM orders o
+       JOIN order_items oi ON oi.order_id = o.id
+       LEFT JOIN neon_auth.user u ON u.id = o.user_id
+       GROUP BY o.id, u.email
+       ORDER BY o.created_at DESC`
     );
 
     res.json(result.rows);

@@ -1,10 +1,12 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Link } from "react-router-dom";
-import { MdBolt, MdLocalShipping, MdArrowForward, MdLock, MdAdd, MdRemove, MdDelete } from "react-icons/md";
+import { MdBolt, MdLocalShipping, MdArrowForward, MdLock, MdAdd, MdRemove, MdDelete, MdCheckCircle } from "react-icons/md";
 import { useCart } from "../../contexts/cart/useCart";
 import { useAuth } from "../../contexts/auth/AuthContext";
 import { CATEGORY_LABEL } from "../../services/productsService";
 import type { CartItem as CartItemType } from "../../services/cartService";
+import { CheckoutModal } from "../../components/CheckoutModal";
+import type { Order } from "../../services/ordersService";
 
 interface CartLineProps {
   item: CartItemType;
@@ -73,6 +75,8 @@ const CartLine = memo(({ item, onUpdateQuantity, onRemove }: CartLineProps) => (
 export default function Cart() {
   const { user } = useAuth();
   const { items, total, loading, error, updateQuantity, removeItem } = useCart();
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
 
   const subtotal = total;
   const tax = subtotal * 0.08;
@@ -89,6 +93,21 @@ export default function Cart() {
             Review your gear before heading to the pitch. Engineered for speed, built for the win.
           </p>
         </div>
+
+        {completedOrder && (
+          <div className="mb-8 bg-primary/10 border border-primary/40 rounded-xl p-6 flex items-start gap-4">
+            <MdCheckCircle className="text-primary text-3xl shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-headline-lg italic uppercase text-on-surface">
+                Order #{completedOrder.id} Confirmed
+              </h3>
+              <p className="text-on-surface-variant text-sm mt-1">
+                Total ${Number(completedOrder.total_amount).toFixed(2)}. We'll
+                send tracking details to your email.
+              </p>
+            </div>
+          </div>
+        )}
 
         {!user ? (
           <div className="bg-surface-container-low border border-outline-variant/30 rounded-xl p-12 text-center space-y-4">
@@ -185,7 +204,10 @@ export default function Cart() {
                   </div>
                 </div>
 
-                <button className="w-full mt-10 bg-primary-container text-on-primary-container py-5 font-headline-lg italic uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform active:scale-95 group shadow-[0_4px_20px_rgba(230,30,42,0.4)] cursor-pointer">
+                <button
+                  onClick={() => setCheckoutOpen(true)}
+                  className="w-full mt-10 bg-primary-container text-on-primary-container py-5 font-headline-lg italic uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform active:scale-95 group shadow-[0_4px_20px_rgba(230,30,42,0.4)] cursor-pointer"
+                >
                   Checkout
                   <MdArrowForward className="transition-transform group-hover:translate-x-1" />
                 </button>
@@ -201,6 +223,15 @@ export default function Cart() {
           </div>
         )}
       </main>
+
+      <CheckoutModal
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        onSuccess={(order) => {
+          setCheckoutOpen(false);
+          setCompletedOrder(order);
+        }}
+      />
     </div>
   );
 }
