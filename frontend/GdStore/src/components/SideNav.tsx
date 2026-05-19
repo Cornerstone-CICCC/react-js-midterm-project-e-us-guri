@@ -6,7 +6,7 @@ import {
   MdSettings, 
   MdAdd 
 } from "react-icons/md";
-import { Link } from "react-router-dom"; // Se estiver usando router
+import { Link } from "react-router-dom";
 
 const SideNav = () => {
   return (
@@ -35,7 +35,6 @@ const SideNav = () => {
             </a>
           </li>
           
-          {/* Item comum (Orders) */}
           <NavItem icon={<MdReceiptLong size={24} />} label="Orders" />
           <NavItem icon={<MdLeaderboard size={24} />} label="Analytics" />
           <NavItem icon={<MdGroup size={24} />} label="Customers" />
@@ -69,7 +68,6 @@ const SideNav = () => {
   );
 };
 
-// Componente auxiliar para os itens da lista não ativos
 const NavItem = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
   <li>
     <a 
